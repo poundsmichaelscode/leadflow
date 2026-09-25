@@ -1,8 +1,19 @@
-# Leadflow — Lead Management MVP
+# Leadflow
 
-A production-ready full-stack Lead Management MVP developed as a technical assessment for **Quovoy**, a SaaS company based in Newcastle upon Tyne, United Kingdom.
+Production-oriented full-stack Lead Management MVP built with Next.js, Express, TypeScript, Prisma, PostgreSQL, Docker, GitHub Actions, Vercel, and Render.
+
+Developed as a technical assessment for **Quovoy**, a SaaS company based in Newcastle upon Tyne, United Kingdom.
 
 [![CI](https://github.com/poundsmichaelscode/leadflow/actions/workflows/ci.yml/badge.svg)](https://github.com/poundsmichaelscode/leadflow/actions/workflows/ci.yml)
+
+## Production Links
+
+| Service | URL |
+|---|---|
+| Live Application | https://leadflow-psi-sage.vercel.app |
+| Production API | https://leadflow-yiwn.onrender.com |
+| API Health Check | https://leadflow-yiwn.onrender.com/health |
+| GitHub Repository | https://github.com/poundsmichaelscode/leadflow |
 
 ## Assessment Company
 
@@ -12,17 +23,88 @@ A production-ready full-stack Lead Management MVP developed as a technical asses
 
 ## Project Overview
 
-Leadflow is a full-stack application for creating, viewing, and tracking sales leads through a simple sales pipeline.
+Leadflow is a full-stack lead management application for creating, viewing, and tracking prospects through a simple sales pipeline.
 
-The application allows users to:
+The application demonstrates a production-style architecture with:
 
-- Create a lead with a name, email address, and status
-- View all leads in a responsive dashboard
-- Track leads through multiple pipeline stages
-- Receive frontend and backend validation feedback
-- Prevent duplicate lead email addresses
-- Persist lead data with PostgreSQL
-- Run the complete application with Docker Compose
+- Separate frontend and backend services
+- Managed PostgreSQL database
+- Prisma ORM and migrations
+- Dockerized local development
+- Automated testing
+- GitHub Actions CI
+- Production deployments on Vercel and Render
+
+## Features
+
+- Create new leads
+- View all leads
+- Track leads by pipeline status
+- Persistent PostgreSQL storage
+- Unique email enforcement
+- Client-side validation
+- Server-side validation with Zod
+- Duplicate-email handling
+- Loading states
+- Empty states
+- Success feedback
+- Error handling
+- Responsive UI
+- REST API
+- Health-check endpoint
+- Automated database migrations
+- Docker Compose support
+- Continuous integration
+
+## Lead Statuses
+
+Supported statuses:
+
+- New
+- Engaged
+- Proposal Sent
+- Closed-Won
+- Closed-Lost
+
+## Production Architecture
+
+```text
+User Browser
+     |
+     | HTTPS
+     v
+Vercel
+Next.js Frontend
+     |
+     | HTTPS
+     v
+Render
+Express / TypeScript API
+     |
+     v
+Prisma ORM
+     |
+     v
+Render PostgreSQL
+```
+
+## Local Architecture
+
+```text
+Browser
+   |
+   v
+Next.js :3000
+   |
+   v
+Express API :4000
+   |
+   v
+Prisma
+   |
+   v
+PostgreSQL :5432
+```
 
 ## Tech Stack
 
@@ -35,45 +117,34 @@ The application allows users to:
 
 ### Backend
 
-- Node.js
+- Node.js 22
 - Express.js
 - TypeScript
 - Zod
 - Prisma ORM
+- PostgreSQL adapter
 
 ### Database
 
 - PostgreSQL 17
 
-### DevOps and Quality
+### DevOps
 
 - Docker
 - Docker Compose
 - GitHub Actions
+- Vercel
+- Render
+
+### Testing and Quality
+
 - Vitest
 - Supertest
 - ESLint
-- TypeScript type checking
+- TypeScript strict mode
+- GitHub Actions CI
 
-## Architecture
-
-```text
-Browser
-   |
-   v
-Next.js Web App :3000
-   |
-   v
-Express API :4000
-   |
-   v
-Prisma ORM
-   |
-   v
-PostgreSQL :5432
-```
-
-## Project Structure
+## Repository Structure
 
 ```text
 leadflow/
@@ -83,29 +154,40 @@ leadflow/
 ├── apps/
 │   ├── api/
 │   │   ├── prisma/
+│   │   │   ├── migrations/
+│   │   │   └── schema.prisma
 │   │   ├── src/
+│   │   │   ├── config/
+│   │   │   ├── controllers/
+│   │   │   ├── middleware/
+│   │   │   ├── routes/
+│   │   │   ├── services/
+│   │   │   ├── utils/
+│   │   │   └── validation/
 │   │   ├── tests/
 │   │   └── Dockerfile
 │   └── web/
 │       ├── src/
+│       │   ├── app/
+│       │   ├── components/
+│       │   ├── hooks/
+│       │   ├── lib/
+│       │   └── types/
 │       └── Dockerfile
 ├── docker-compose.yml
+├── render.yaml
 ├── package.json
 ├── package-lock.json
 └── README.md
 ```
 
-## Lead Statuses
+## API
 
-The application supports the following lead statuses:
+Production API:
 
-- New
-- Engaged
-- Proposal Sent
-- Closed-Won
-- Closed-Lost
-
-## API Endpoints
+```text
+https://leadflow-yiwn.onrender.com
+```
 
 ### Health Check
 
@@ -121,7 +203,7 @@ Example response:
 }
 ```
 
-### Get All Leads
+### Get Leads
 
 ```http
 GET /leads
@@ -144,79 +226,69 @@ Example request:
 }
 ```
 
-The API validates incoming data and rejects duplicate email addresses.
+## API Validation
+
+The backend validates:
+
+- Lead name
+- Email format
+- Supported lead status
+- Duplicate email addresses
+
+Duplicate emails return an HTTP `409 Conflict`.
 
 ## Environment Variables
 
 ### API
 
-Create `apps/api/.env`:
+Local:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/lead_manager?schema=public"
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/lead_manager?schema=public
 PORT=4000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:3000
 ```
 
+Production variables are configured in Render.
+
+Production CORS:
+
+```env
+CORS_ORIGIN=https://leadflow-psi-sage.vercel.app
+```
+
 ### Frontend
 
-Create `apps/web/.env.local`:
+Local:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
 
-Environment files are excluded from Git.
+Production:
 
-## Run with Docker
+```env
+NEXT_PUBLIC_API_URL=https://leadflow-yiwn.onrender.com
+```
 
-Docker Compose is the recommended way to run the complete application.
+Environment files containing secrets are excluded from Git.
+
+## Local Development
 
 ### Requirements
 
+- Node.js 22+
+- npm
 - Docker
 - Docker Compose
 
-### Start the application
-
-From the project root:
+Clone the repository:
 
 ```bash
-docker compose up --build
+git clone https://github.com/poundsmichaelscode/leadflow.git
+cd leadflow
 ```
-
-The following services will start:
-
-- Frontend: `http://localhost:3000`
-- API: `http://localhost:4000`
-- PostgreSQL: `localhost:5432`
-
-Open:
-
-```text
-http://localhost:3000
-```
-
-Check the API:
-
-```bash
-curl http://localhost:4000/health
-```
-
-Stop the containers:
-
-```bash
-docker compose down
-```
-
-Remove containers and database volume:
-
-```bash
-docker compose down -v
-```
-
-## Run Locally Without Docker
 
 Install dependencies:
 
@@ -224,29 +296,71 @@ Install dependencies:
 npm ci
 ```
 
-Generate Prisma Client:
+## Run with Docker
+
+Start the entire application:
+
+```bash
+docker compose up --build
+```
+
+Services:
+
+```text
+Frontend:   http://localhost:3000
+API:        http://localhost:4000
+PostgreSQL: localhost:5432
+```
+
+Stop the application:
+
+```bash
+docker compose down
+```
+
+Remove the database volume too:
+
+```bash
+docker compose down -v
+```
+
+## Run Without Docker
+
+### Backend
 
 ```bash
 cd apps/api
+```
+
+Generate Prisma Client:
+
+```bash
 npx prisma generate
 ```
 
-Apply database migrations:
+Apply migrations:
 
 ```bash
 npx prisma migrate deploy --config prisma7.config.ts
 ```
 
-Start the backend:
+Start development API:
 
 ```bash
 npm run dev
 ```
 
-In another terminal, start the frontend:
+### Frontend
+
+In another terminal:
 
 ```bash
 cd apps/web
+```
+
+Start:
+
+```bash
 npm run dev
 ```
 
@@ -256,69 +370,142 @@ Open:
 http://localhost:3000
 ```
 
-## Testing
+## Database
 
-The backend uses Vitest and Supertest.
+The main `Lead` model contains:
 
-Run tests:
+- `id`
+- `name`
+- `email`
+- `status`
+- `createdAt`
+- `updatedAt`
 
-```bash
-cd apps/api
-npm test
-```
+Email is unique.
 
-Current test result:
+Indexes are included for:
+
+- Lead status
+- Creation date
+
+## Prisma Migrations
+
+Migration files are committed under:
 
 ```text
-Test Files: 2 passed
-Tests:      8 passed
+apps/api/prisma/migrations/
 ```
+
+Production migration command:
+
+```bash
+npx prisma migrate deploy --config prisma7.config.ts
+```
+
+Development migration command:
+
+```bash
+npx prisma migrate dev
+```
+
+## Testing
+
+Run API tests:
+
+```bash
+npm test --workspace=apps/api
+```
+
+Current automated test result:
+
+```text
+2 test files passed
+8 tests passed
+```
+
+The test suite covers:
+
+- Health endpoint
+- Lead creation
+- Lead listing
+- Validation
+- Duplicate email handling
+- API error behaviour
 
 ## Code Quality
 
-### API Type Check
+API type checking:
 
 ```bash
-cd apps/api
-npm run typecheck
+npm run typecheck --workspace=apps/api
 ```
 
-### API Build
+API tests:
 
 ```bash
-npm run build
+npm test --workspace=apps/api
 ```
 
-### Frontend Lint
+API build:
 
 ```bash
-cd apps/web
-npm run lint
+npm run build --workspace=apps/api
 ```
 
-### Frontend Build
+Frontend lint:
 
 ```bash
-npm run build
+npm run lint --workspace=apps/web
+```
+
+Frontend build:
+
+```bash
+npm run build --workspace=apps/web
 ```
 
 ## Continuous Integration
 
-GitHub Actions runs automatically on pushes and pull requests targeting the `main` branch.
+GitHub Actions runs on:
 
-The CI pipeline performs:
+- Pushes to `main`
+- Pull requests targeting `main`
 
-1. Repository checkout
-2. Node.js 22 setup
-3. Dependency installation
-4. PostgreSQL service startup
-5. Prisma Client generation
-6. Database migration deployment
-7. API type checking
-8. API testing
-9. API production build
-10. Frontend linting
-11. Frontend production build
+Pipeline:
+
+```text
+Checkout
+   |
+   v
+Node.js 22
+   |
+   v
+npm ci
+   |
+   v
+PostgreSQL Service
+   |
+   v
+Prisma Generate
+   |
+   v
+Database Migration
+   |
+   v
+API Typecheck
+   |
+   v
+API Tests
+   |
+   v
+API Build
+   |
+   v
+Web Lint
+   |
+   v
+Web Build
+```
 
 Workflow file:
 
@@ -326,129 +513,212 @@ Workflow file:
 .github/workflows/ci.yml
 ```
 
-## Validation and Error Handling
+## Production Deployment
 
-The backend uses Zod for request validation and centralized Express error handling.
+### Frontend — Vercel
 
-Supported validation includes:
+Production URL:
 
-- Lead name validation
-- Email format validation
-- Lead status validation
-- Unique email enforcement
-- Duplicate email error handling
-- Consistent API error responses
+```text
+https://leadflow-psi-sage.vercel.app
+```
 
-The frontend also provides:
+Configuration:
 
-- Loading states
-- Empty states
-- Success feedback
-- Error feedback
-- Duplicate email feedback
-- Disabled submit state while requests are processing
+```text
+Framework: Next.js
+Root Directory: apps/web
+```
+
+Environment variable:
+
+```env
+NEXT_PUBLIC_API_URL=https://leadflow-yiwn.onrender.com
+```
+
+### Backend — Render
+
+Production URL:
+
+```text
+https://leadflow-yiwn.onrender.com
+```
+
+The API is deployed from:
+
+```text
+apps/api/Dockerfile
+```
+
+Production startup:
+
+```bash
+npm run start:prod
+```
+
+which runs:
+
+```bash
+prisma migrate deploy --config prisma7.config.ts && node dist/server.js
+```
+
+### Database — Render PostgreSQL
+
+The API connects to a managed PostgreSQL database through the Render internal database connection URL.
+
+The production database connection string is stored securely as:
+
+```text
+DATABASE_URL
+```
+
+and is never committed to Git.
+
+## Health Monitoring
+
+Health endpoint:
+
+```text
+https://leadflow-yiwn.onrender.com/health
+```
+
+Render monitors:
+
+```text
+/health
+```
+
+The health service also verifies database connectivity.
 
 ## Security
 
-The backend includes practical security controls for an MVP:
+The API includes:
 
 - Helmet security headers
-- Configurable CORS
+- CORS configuration
 - Rate limiting
 - Request body size limits
+- Zod validation
+- Unique database constraints
 - Environment-based configuration
-- Database uniqueness constraints
-- Server-side input validation
-
-## Database Design
-
-The `Lead` model contains:
-
-- `id` — UUID primary key
-- `name`
-- `email` — unique
-- `status`
-- `createdAt`
-- `updatedAt`
-
-Indexes are included on status and creation date.
+- Centralized error handling
+- No production secrets committed to source control
 
 ## Design Decisions
 
 ### Monorepo
 
-The frontend and backend are maintained in a single npm workspace.
+The frontend and backend live in a single npm workspace.
 
 This simplifies:
 
 - Dependency installation
+- CI
 - Docker builds
-- CI configuration
 - Repository management
 
-### Separate Backend API
+### Separate API Layer
 
-The Next.js application does not communicate directly with PostgreSQL.
+The Next.js frontend does not communicate directly with PostgreSQL.
 
-All lead operations pass through the Express API so validation and business rules remain centralized.
+```text
+Next.js
+   |
+   v
+Express
+   |
+   v
+Prisma
+   |
+   v
+PostgreSQL
+```
 
-### PostgreSQL and Prisma
+This keeps business logic, validation, and database access centralized.
 
-PostgreSQL provides durable relational storage while Prisma provides type-safe database access and versioned migrations.
+### PostgreSQL
 
-### Docker Compose
+PostgreSQL provides durable relational persistence and database-level constraints.
 
-Docker Compose provides a repeatable development environment and allows the full application to start with one command.
+### Prisma
 
-## Trade-offs
+Prisma provides:
 
-This project focuses on the requested MVP scope.
+- Type-safe database access
+- Schema management
+- Migration tracking
+- Production migration deployment
 
-The following features are intentionally not included:
+### Docker
+
+Docker provides a repeatable runtime across development and deployment environments.
+
+### CI
+
+Every push to `main` is automatically validated through GitHub Actions.
+
+## Current Scope
+
+The MVP currently focuses on lead creation and lead viewing.
+
+Not currently included:
 
 - Authentication
 - User accounts
-- Edit leads
-- Delete leads
+- Edit lead
+- Delete lead
 - Search
 - Filtering
 - Sorting
 - Pagination
+- Lead assignment
+- Notes
 - Analytics
-- Lead notes
-- Multi-user lead assignment
 
 ## Future Improvements
 
-Possible improvements include:
+Potential production improvements include:
 
-- Authentication and role-based access control
-- Edit and delete lead functionality
+- Authentication
+- Role-based access control
+- Lead editing
+- Lead deletion
 - Search and filtering
 - Sorting and pagination
-- Lead ownership and assignment
-- Notes and activity history
-- Pipeline analytics
-- Dashboard reporting
+- Lead ownership
+- Activity history
+- Notes
+- Analytics dashboard
 - Frontend unit tests
 - End-to-end tests
-- Dedicated isolated test database
 - Structured logging
-- Monitoring and observability
-- OpenAPI / Swagger documentation
-- Cloud deployment
-- Managed PostgreSQL database
+- Error monitoring
+- Metrics and observability
+- OpenAPI / Swagger
+- Custom domains
+- Database backups
+- Redis caching
+- Background workers
+
+## Assessment
+
+Built as a technical assessment submission for:
+
+**Quovoy**  
+SaaS  
+Newcastle upon Tyne, United Kingdom
 
 ## Author
 
-**Olayenikan Michael**  
-Full-Stack Developer | Backend Developer | DevOps Engineer  
+**Olayenikan Michael**
+
+Full-Stack Developer | Backend Developer | DevOps Engineer
+
 Lagos, Nigeria
 
-GitHub: [poundsmichaelscode](https://github.com/poundsmichaelscode)
+GitHub: https://github.com/poundsmichaelscode
 
 ---
 
-Built as a technical assessment submission for **Quovoy**.
-EOF
+**Leadflow — built, tested, containerized, continuously integrated, and deployed using a production-oriented full-stack architecture.**
 
