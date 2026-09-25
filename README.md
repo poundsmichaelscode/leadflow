@@ -1,7 +1,3 @@
-Paste this directly from the `leadflow` root:
-
-```bash
-cat > README.md <<'EOF'
 # Leadflow — Lead Management MVP
 
 A production-ready full-stack Lead Management MVP developed as a technical assessment for **Quovoy**, a SaaS company based in Newcastle upon Tyne, United Kingdom.
