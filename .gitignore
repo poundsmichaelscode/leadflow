@@ -28,3 +28,7 @@ npm-debug.log*
 # Editors
 .vscode/
 .idea/
+
+# Local AI/tooling metadata
+.agents/
+**/.agents/

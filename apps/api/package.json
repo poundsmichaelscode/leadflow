@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "start:prod": "prisma migrate deploy --config prisma7.config.ts && node dist/server.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
