@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+apps/*/node_modules/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Builds
+dist/
+.next/
+out/
+
+# Testing
+coverage/
+
+# Prisma generated client
+apps/api/src/generated/prisma/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
