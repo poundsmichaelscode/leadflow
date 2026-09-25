@@ -36,4 +36,4 @@ COPY --from=builder /app/apps/api/prisma7.config.ts ./prisma7.config.ts
 
 EXPOSE 4000
 
-CMD ["node", "dist/server.js"]
+CMD ["npm", "run", "start:prod"]
