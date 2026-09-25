@@ -1,0 +1,31 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  runtime             = "nodejs"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeadStatus {
+  New
+  Engaged
+  ProposalSent
+  ClosedWon
+  ClosedLost
+}
+
+model Lead {
+  id        String     @id @default(uuid())
+  name      String
+  email     String     @unique
+  status    LeadStatus
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
